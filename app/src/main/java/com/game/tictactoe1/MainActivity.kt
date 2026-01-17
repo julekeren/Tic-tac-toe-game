@@ -51,10 +51,10 @@ class MainActivity : AppCompatActivity() {
                         height = 0
                         columnSpec = GridLayout.spec(j, 1f)
                         rowSpec = GridLayout.spec(i, 1f)
-                        setMargins(8, 8, 8, 8)
+                        setMargins(12, 12, 12, 12)
                     }
-                    textSize = 48f
-                    setBackgroundColor(ContextCompat.getColor(context, R.color.button_bg))
+                    textSize = 56f
+                    background = ContextCompat.getDrawable(context, R.drawable.cell_normal)
                     setOnClickListener { onCellClick(i, j, this) }
                 }
                 buttons[i][j] = button
@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateStatus() {
         statusText.text = "Player $currentPlayer turn"
+        val color = if (currentPlayer == "X") R.color.player_x_color else R.color.player_o_color
+        statusText.setTextColor(ContextCompat.getColor(this, color))
     }
 
 
@@ -75,17 +77,24 @@ class MainActivity : AppCompatActivity() {
         if (!gameActive || gameBoard[row][col] != null) return
         gameBoard[row][col] = currentPlayer
         button.text = currentPlayer
+        
+        val color = if (currentPlayer == "X") R.color.player_x_color else R.color.player_o_color
+        button.setTextColor(ContextCompat.getColor(this, color))
+        
         button.isEnabled = false
         roundCount++
         if (checkWinner()) {
             gameActive = false
             statusText.text = "Player ${this.currentPlayer} won"
+            restButton.text = "Play again"
             disableBoard()
             highlightWiningCells()
 
         } else if (roundCount == 9) {
             gameActive = false
             statusText.text = "Its a tie !"
+            statusText.setTextColor(ContextCompat.getColor(this, R.color.black))
+            restButton.text = "Play again"
             disableBoard()
         } else {
             currentPlayer = if (currentPlayer == "X") "O" else "X"
@@ -96,16 +105,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun highlightWiningCells() {
-        val winColor = ContextCompat.getColor(this, R.color.win_color)
+        val winBg = ContextCompat.getDrawable(this, R.drawable.cell_won)
         //rows
         for (i in 0..2)
         {
             if (gameBoard[i][0] != null &&
                 gameBoard[i][0] == gameBoard[i][1] &&
                 gameBoard[i][1] == gameBoard[i][2]){
-                buttons[i][0]?.setBackgroundColor(winColor)
-                buttons[i][1]?.setBackgroundColor(winColor)
-                buttons[i][2]?.setBackgroundColor(winColor)
+                buttons[i][0]?.background = winBg
+                buttons[i][1]?.background = winBg
+                buttons[i][2]?.background = winBg
 
             }
         }
@@ -115,26 +124,26 @@ class MainActivity : AppCompatActivity() {
                 gameBoard[0][j] == gameBoard[1][j] &&
                 gameBoard[1][j] == gameBoard[2][j]
             ) {
-                buttons[0][j]?.setBackgroundColor(winColor)
-                buttons[1][j]?.setBackgroundColor(winColor)
-                buttons[2][j]?.setBackgroundColor(winColor)
+                buttons[0][j]?.background = winBg
+                buttons[1][j]?.background = winBg
+                buttons[2][j]?.background = winBg
             }
         }
         //others
         if (gameBoard[0][0] != null &&
             gameBoard[0][0] == gameBoard[1][1] &&
             gameBoard[1][1] == gameBoard[2][2]) {
-            buttons[0][0]?.setBackgroundColor(winColor)
-            buttons[1][1]?.setBackgroundColor(winColor)
-            buttons[2][2]?.setBackgroundColor(winColor)
+            buttons[0][0]?.background = winBg
+            buttons[1][1]?.background = winBg
+            buttons[2][2]?.background = winBg
         }
 
         if (gameBoard[0][2] != null &&
             gameBoard[0][2] == gameBoard[1][1] &&
             gameBoard[1][1] == gameBoard[2][0]) {
-            buttons[0][2]?.setBackgroundColor(winColor)
-            buttons[1][1]?.setBackgroundColor(winColor)
-            buttons[2][0]?.setBackgroundColor(winColor)
+            buttons[0][2]?.background = winBg
+            buttons[1][1]?.background = winBg
+            buttons[2][0]?.background = winBg
         }
 
     }
@@ -191,16 +200,18 @@ class MainActivity : AppCompatActivity() {
         gameActive = true
         roundCount = 0
         gameBoard = Array(3) { arrayOfNulls<String>(3) }
-        val defaultColor = ContextCompat.getColor(this, R.color.button_bg)
+        restButton.text = "Reset game"
+        val normalBg = ContextCompat.getDrawable(this, R.drawable.cell_normal)
         for (i in 0..2) {
             for (j in 0..2) {
                 buttons[i][j]?.apply {
                     text = ""
                     isEnabled = true
-                    setBackgroundColor(defaultColor)
+                    background = normalBg
                 }
 
             }
         }
+        updateStatus()
     }
 }
